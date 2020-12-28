@@ -1,0 +1,109 @@
+version: "2"
+services:
+
+  index:
+    image: nginx:alpine
+    restart: always
+    container_name: nginx_index
+    ports:
+      - 80:80
+    volumes:
+      - ./index/public:/usr/share/nginx/html:ro
+
+  samba:
+    image: dperson/samba:rpi
+    container_name: samba
+    restart: always
+    command: '-u "pi;9876;" -s "disco;/disco;yes;no"'
+    stdin_open: true
+    tty: true
+    ports:
+      - 139:139
+      - 445:445
+    volumes:
+      - /usr/share/zoneinfo/Europe/Madrid:/etc/localtime
+      - ${DISK}:/disco
+
+  minidlna:
+    image: cytomich/rpi-docker-minidlna
+    volumes:
+      - ${DISK}:/media
+    environment:
+      - MINIDLNA_MEDIA_DIR=/media
+      - MINIDLNA_PORT=8200
+      - MINIDLNA_FRIENDLY_NAME=media-box
+    network_mode: "host"
+    restart: always
+
+  rpimonitor:
+    image: michaelmiklis/rpi-monitor:latest
+    restart: always
+    container_name: rpi-monitor
+    ports:
+      - 8888:8888
+    volumes:
+      - /boot:/boot
+      - /sys:/dockerhost/sys:ro
+      - /etc:/dockerhost/etc:ro
+      - /proc:/dockerhost/proc:ro
+      - /usr/lib:/dockerhost/usr/lib:ro
+    devices:
+      - /dev/vchiq:/dev/vchiq
+      - /dev/vcsm:/dev/vcsm
+
+  transmission:
+    image: ghcr.io/linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - TRANSMISSION_WEB_HOME=/transmission-web-control/
+      - USER=1234
+      - PASS=1234
+    volumes:
+      - ./transmission:/config
+      - ${DISK}/download/torrents:/downloads
+      - ${DISK}/download/watch:/watch
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+
+
+  amule:
+    image : otrodeteruel/amulepi
+    container_name: amule
+    environment:
+      - PUID:1000
+      - PGID:1000
+    volumes:
+      - ${DISK}/download/amule:/home/myuser/amule
+    ports:
+      - 4711:4711
+      - 4712:4712
+      - 8004:8004
+      - 8006:8006/udp
+      - 8007:8007/udp
+    restart: unless-stopped
+
+  filebrowser:
+    image : filebrowser/filebrowser:pi
+    container_name: filebrowser
+    restart: always
+    volumes:
+      - ./filebrowser/filebrowser.db:/database.db
+      - ./filebrowser/filebrowser.json:/.filebrowser.json
+      - ${DISK}:/srv
+    ports:
+      - 8088:80
+
+  youtube-dl:
+    image: "otrodeteruel/yt_dl_pi"
+    container_name: youtube-dl
+    ports:
+      - 8080:8080
+    volumes:
+      - ${DISK}/download/youtube-dl:/youtube-dl
+    restart: always
