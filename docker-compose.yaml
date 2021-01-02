@@ -14,7 +14,7 @@ services:
     image: dperson/samba:rpi
     container_name: samba
     restart: always
-    command: '-u "pi;9876;" -s "disco;/disco;yes;no"'
+    command: '-u "pi;9876;" -s "disco;/disco;yes;no;no"'
     stdin_open: true
     tty: true
     ports:
@@ -58,7 +58,6 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
-      - TRANSMISSION_WEB_HOME=/transmission-web-control/
       - USER=1234
       - PASS=1234
     volumes:
@@ -95,7 +94,7 @@ services:
     volumes:
       - ./filebrowser/filebrowser.db:/database.db
       - ./filebrowser/filebrowser.json:/.filebrowser.json
-      - ${DISK}:/srv
+      - ${DISK}/:/srv
     ports:
       - 8088:80
 

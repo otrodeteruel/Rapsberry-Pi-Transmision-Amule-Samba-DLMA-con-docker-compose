@@ -1,21 +1,28 @@
-# Rapsberry Pi download and server video
+# Rapsberry Pi server download 
 
-Usamar el rapsberry como equipo para tener un amule, un transmitions que es un cliente Torrent, para poder descargar archivos al tratarse de un equipo de bajo consumo y no hay problema en dejarlos encendido continuamente.
-Le ponemos tambien el servidio de youtube-dl que nos permite descargar videos de youyube y si lo necesitamos convertirlos a mp3.
-le instalamos un servidor samba y un servidor dlna para compartir los archivos por la red
+#### Raspberry pi docker, transmision, amule, youtube-dl, filebrowser...
 
-Todo montado sobre docker con lo que ponerlo en marcha es cuestion de 2 minutos.,.
+Usar la rapsberry como equipo para tener un amule, un transmitions que es un cliente Torrent, para poder descargar archivos al tratarse de un equipo de bajo consumo y no hay problema en dejarlos encendido continuamente.
 
+Le ponemos también el servicio de youtube-dl que nos permite descargar videos de Youtube y si lo necesitamos convertirlos a mp3.
 
-para ver la instalacion inicial de rapsberry y docker en la misma ver :
+Le instalamos un servidor samba y un servidor dlna para compartir los archivos por la red. Tambien hemos incorpordado el servicio de filebrowser para tener acceso a los archivos a traves de un navegador web.
+
+![title ><](captures/title.png)
+
+Todo montado sobre docker con lo que ponerlo en marcha es cuestión de 2 minutos.,.
+
+Partimos de una rapsberry con un sistema Raspberry Pi OS Lite instalado, habilitado el ssh y con ip fija en 192.168.1.222, y instalado docker y docker-compose en ella.
+
+** dejo pendiente hacer un tutorial de esta primera fase si alguien lo necesita
 
 # Previo
 
-necesitamos montar un disco duro sobre la rapsberry para tener una capacidad de almacenaje
+Necesitamos montar un disco duro sobre la raspberry para tener una capacidad de almacenaje
 
-## Montar discos externos en el arranque
+## Montar discos externos para almacenamiento
 
-https://geekland.eu/montar-particion-ntfs-fat-o-ext4-en-el-arranque-del-sistema/
+Tengo un disco duro formateado a ext4
 
 PASO 1. Conocer la denominación de la partición que queremos montar
 
@@ -39,34 +46,60 @@ Montar unidad ext4
 
     UUID=XXXXXXXXXXXX /media/disco ext4 errors=remount-ro 0 1
 
+cambiar permiso unidad al usuario pi
 
-## copiar archivos al servidor
+    chown pi:pi /media/disco
 
-## samba
+crear mis directorios
 
-servidor samba, compartir los archivos por la red con otros dispositivos. 
+    mkdir -p /media/disco/download/youtube-dl
+    mkdir -p /media/disco/download/amule
+    mkdir -p /media/disco/download/torrent
+
+    mkdir -p /media/disco/media/musica
+
+# clonar el repositorio y ejecutar el compose
+
+git clone Rpi_server_download
+
+cd Rpi_server_download
+
+docker-compose up -d
+
+para acceder a las aplicaciones hay montado un contenedor con nginx donde hay una web que no da acceso a las aplicaciones:
+
+abrir en navegador y colocar la ip de nuestra raspberry, en mi caso:
+
+    http://192.168.1.222
+
+
+## contenedores montandos
+
+### Docker samba
+
+Servidor samba, compartir los archivos por la red con otros dispositivos. 
 
     smb://192.168.1.222
 
 https://github.com/dperson/samba
 
 
-## rpi-monitor
+### Docker rpi-monitor
 
-sistema de monitorizadion de nuestra raspberry, capacidad, temperatura ...
+Sistema de motorización de los recurso de nuestra raspberry, capacidad, temperatura ...
 
 https://github.com/michaelmiklis/docker-rpi-monitor
 
 
-## minidlna
+### Docker minidlna
 
-En mi caso tengo una televison LG que tiene una entrada de red y utiliza un sistema llamado DLNA, con esto puedo ver los archivos descagado en la tele
+En mi caso tengo una television LG que tiene una entrada de red y utiliza un sistema llamado DLNA, con esto puedo ver los archivos descargados en la tele.
 
 https://github.com/vladgh/docker_base_images/tree/master/minidlna
 
-##  Docker en transmision
+###  Docker transmision
 
-Cliete torrent para descargar archivos
+Cliente torrent para descargar archivos
 
     us: 1234
     ps: 1234
@@ -74,9 +107,15 @@ Cliete torrent para descargar archivos
 https://gitlab.com/jaymoulin/docker-transmission
 
 
-##  Docker en amule
+###  Docker amule
 
 Cliente de redes P2P tipo Emule, para descargar archivos
 
     ps: 1234
 
+###  Docker filebrowser
+
+Navegador de archivos web no permite navegar y gestionar los archivos guardados en nuestro servidor
+
+    us: 1234
+    ps: 1234
