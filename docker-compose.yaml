@@ -63,7 +63,6 @@ services:
     volumes:
       - ./transmission:/config
       - ${DISK}/download/torrents:/downloads
-      - ${DISK}/download/watch:/watch
     ports:
       - 9091:9091
       - 51413:51413
@@ -99,7 +98,7 @@ services:
       - 8088:80
 
   youtube-dl:
-    image: "otrodeteruel/yt_dl_pi"
+    image: otrodeteruel/youtube-dl-server:latest
     container_name: youtube-dl
     ports:
       - 8080:8080

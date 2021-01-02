@@ -6,7 +6,9 @@ Usar la rapsberry como equipo para tener un amule, un transmitions que es un cli
 
 Le ponemos también el servicio de youtube-dl que nos permite descargar videos de Youtube y si lo necesitamos convertirlos a mp3.
 
-Le instalamos un servidor samba y un servidor dlna para compartir los archivos por la red. Tambien hemos incorpordado el servicio de filebrowser para tener acceso a los archivos a traves de un navegador web.
+Le he instalado un servidor samba y un servidor dlna para compartir los archivos por la red. También he incorporado el servicio de filebrowser para tener acceso a los archivos a traves de un navegador web.
+
+he creado un index para que sirva de lanzador de todas aplicaciones
 
 ![title ><](captures/title.png)
 
@@ -14,7 +16,7 @@ Todo montado sobre docker con lo que ponerlo en marcha es cuestión de 2 minutos
 
 Partimos de una rapsberry con un sistema Raspberry Pi OS Lite instalado, habilitado el ssh y con ip fija en 192.168.1.222, y instalado docker y docker-compose en ella.
 
-** dejo pendiente hacer un tutorial de esta primera fase si alguien lo necesita
+* dejo pendiente hacer un tutorial de esta primera fase si alguien lo necesita
 
 # Previo
 
@@ -49,6 +51,10 @@ Montar unidad ext4
 cambiar permiso unidad al usuario pi
 
     chown pi:pi /media/disco
+
+reiniciamos
+
+    sudo reboot
 
 crear mis directorios
 
